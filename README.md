@@ -1,2 +1,438 @@
 # chrome-extension-pro-boilerplate
 Professional Manifest V3 Chrome Extension template with Clean UI and Modular Architecture.
+[sidepanel.html](https://github.com/user-attachments/files/25492472/sidepanel.html)
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETHER_INTEL_SYSTEM_v4_BLACK_OPS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            --bg: #010206;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --surface: rgba(255, 255, 255, 0.02);
+            --border: rgba(255, 255, 255, 0.05);
+            --glass-blur: blur(25px);
+        }
+
+        * {
+            box-sizing: border-box;
+            cursor: crosshair;
+        }
+
+        body {
+            background: var(--bg);
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.12) 0%, transparent 40%),
+                repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(59, 130, 246, 0.02) 1px, rgba(59, 130, 246, 0.02) 2px),
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 4px, 40px 40px, 40px 40px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 24px;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* SCANLINE EFFECT */
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            z-index: 2000;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            border-left: 4px solid var(--accent);
+            padding-left: 16px;
+        }
+
+        .logo-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 26px;
+            letter-spacing: -1.5px;
+            color: #fff;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .version {
+            font-family: 'JetBrains Mono';
+            font-size: 8px;
+            color: #475569;
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+
+        /* NEURAL RADAR OMNI-HUD */
+        .radar-box {
+            position: relative;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .radar-center {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent);
+            z-index: 5;
+        }
+
+        .circle {
+            position: absolute;
+            border: 1px solid rgba(59, 130, 246, 0.05);
+            border-radius: 50%;
+        }
+
+        .c-1 {
+            width: 350px;
+            height: 350px;
+            border-style: dashed;
+        }
+
+        .c-2 {
+            width: 250px;
+            height: 250px;
+            border-width: 2px;
+        }
+
+        .c-3 {
+            width: 150px;
+            height: 150px;
+            border-style: dotted;
+        }
+
+        .sweep {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: conic-gradient(from 0deg, var(--accent) 0deg, transparent 60deg);
+            animation: sweep 3s linear infinite;
+            opacity: 0.1;
+            transform-origin: center;
+        }
+
+        .target {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes sweep {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        /* WAVEFORM LOAD */
+        .wave-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 40px;
+            margin-bottom: 32px;
+            padding: 0 10px;
+        }
+
+        .bar {
+            flex: 1;
+            background: var(--accent);
+            opacity: 0.3;
+            animation: wave 1.5s infinite ease-in-out;
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                height: 10%;
+            }
+
+            50% {
+                height: 100%;
+            }
+        }
+
+        /* STATISTICS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px -10px var(--accent-glow);
+        }
+
+        .label {
+            font-size: 9px;
+            font-weight: 900;
+            color: #475569;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .value {
+            font-size: 28px;
+            font-weight: 900;
+            color: #fff;
+            font-family: 'JetBrains Mono';
+        }
+
+        /* SECURITY LEVEL HUD */
+        .sec-hud {
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.1), transparent);
+            border-left: 2px solid var(--danger);
+            padding: 16px;
+            margin-bottom: 32px;
+            border-radius: 0 16px 16px 0;
+        }
+
+        /* CONSOLE */
+        .console-box {
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            height: 200px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            overflow-y: auto;
+            border-top: 10px solid #1e293b;
+        }
+
+        .c-row {
+            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .c-time {
+            color: #475569;
+        }
+
+        .c-cmd {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .c-res {
+            color: #94a3b8;
+        }
+
+        /* ACTION NAVIGATION */
+        .nav-hud {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            gap: 12px;
+            z-index: 500;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .p-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            box-shadow: 0 15px 30px var(--accent-glow);
+        }
+
+        .s-btn {
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            letter-spacing: 3px;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo-group">
+            <span class="logo">AETHER_v4</span>
+            <span class="version">BLACK_OPS_PROTOCOL_ACTIVE</span>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 10px; font-weight: 900; color: var(--accent);">SECURE_LINK [ESTABLISHED]</div>
+            <div style="font-size: 8px; color: #475569;">LATENCY: 0.0004s</div>
+        </div>
+    </header>
+
+    <!-- OMNI-RADAR HUD -->
+    <div class="radar-box">
+        <div class="radar-center"></div>
+        <div class="circle c-1"></div>
+        <div class="circle c-2"></div>
+        <div class="circle c-3"></div>
+        <div class="sweep"></div>
+
+        <div class="target" style="top: 20%; left: 30%;"></div>
+        <div class="target" style="top: 60%; left: 80%; animation-delay: 0.3s;"></div>
+        <div class="target" style="top: 40%; left: 70%; animation-delay: 0.7s;"></div>
+
+        <div
+            style="position: absolute; top: 15px; right: 20px; font-size: 8px; font-family: 'JetBrains Mono'; color: var(--accent);">
+            TRK_ID: 0x82F1</div>
+        <div
+            style="position: absolute; bottom: 15px; left: 20px; font-size: 8px; font-family: 'JetBrains Mono'; color: var(--accent);">
+            COORDS: 45.32 / -12.44</div>
+    </div>
+
+    <!-- WAVEFORM ACTIVITY -->
+    <div style="font-size: 9px; font-weight: 900; color: #475569; margin-bottom: 8px; padding-left: 10px;">
+        THREAD_LOAD_ACTIVITY</div>
+    <div class="wave-container">
+        <div class="bar" style="animation-delay: 0.1s;"></div>
+        <div class="bar" style="animation-delay: 0.3s;"></div>
+        <div class="bar" style="animation-delay: 0.2s;"></div>
+        <div class="bar" style="animation-delay: 0.5s;"></div>
+        <div class="bar" style="animation-delay: 0.4s;"></div>
+        <div class="bar" style="animation-delay: 0.8s;"></div>
+        <div class="bar" style="animation-delay: 0.2s;"></div>
+        <div class="bar" style="animation-delay: 0.6s;"></div>
+    </div>
+
+    <!-- CORE METRICS -->
+    <div class="stats-grid">
+        <div class="card">
+            <span class="label">Total Nodes</span>
+            <span class="value">94.2K</span>
+        </div>
+        <div class="card">
+            <span class="label">Mem Usage</span>
+            <span class="value">14MB</span>
+        </div>
+    </div>
+
+    <!-- SECURITY PROTOCOL -->
+    <div class="sec-hud">
+        <div style="font-size: 10px; font-weight: 900; color: var(--danger); margin-bottom: 4px;">
+            SECURITY_BREACH_PROTOCOL</div>
+        <div style="font-size: 12px; font-weight: 700;">LEVEL: CRITICAL_ALPHA</div>
+        <div style="font-size: 9px; color: #94a3b8; margin-top: 5px;">Stealth engine active. Anti-bot heuristics
+            bypassed.</div>
+    </div>
+
+    <!-- REAL-TIME LOG -->
+    <div style="font-size: 9px; font-weight: 900; color: #475569; margin-bottom: 12px;">SYSTEM_LOG_v4.0</div>
+    <div class="console-box" id="stream">
+        <div class="c-row">
+            <span class="c-time">22:11:02</span>
+            <span class="c-cmd">[SYS]</span>
+            <span class="c-res">Neural link initialized.</span>
+        </div>
+        <div class="c-row">
+            <span class="c-time">22:11:05</span>
+            <span class="c-cmd">[SCR]</span>
+            <span class="c-res">Bypassing Cloudflare headers...</span>
+        </div>
+        <div class="c-row">
+            <span class="c-time">22:11:08</span>
+            <span class="c-cmd">[OK]</span>
+            <span class="c-res" style="color: var(--success);">Stealth session established.</span>
+        </div>
+    </div>
+
+    <div style="height: 120px;"></div>
+
+    <!-- HUD NAVIGATION -->
+    <nav class="nav-hud">
+        <button class="p-btn btn">Initialize Intelligence</button>
+        <button class="s-btn btn">Export Data</button>
+    </nav>
+
+    <script type="module" src="src/ui/Dashboard.js"></script>
+</body>
+
+</html>
