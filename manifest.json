@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Aether Scale Intelligence v4",
+  "version": "4.0.0",
+  "description": "Enterprise-grade real-time content analysis system.",
+  "permissions": [
+    "sidePanel",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "src/services/StorageManager.js"
+  }
+}
